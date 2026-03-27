@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Task Manager</h1>
+
+    <input type="text" id="taskInput" placeholder="Enter task">
+    <button onclick="addTask()">Add</button>
+
+    <h3>Progress</h3>
+    <div class="progress-bar">
+        <div id="progress"></div>
+    </div>
+
+    <h3>Incomplete Tasks</h3>
+    <ul id="incompleteList"></ul>
+
+    <h3>Completed Tasks</h3>
+    <ul id="completeList"></ul>
+</div>
+
+<script>
+
+let totalTasks = 0;
+let completedTasks = 0;
+
+function addTask() {
+    let input = document.getElementById("taskInput");
+    let text = input.value;
+
+    if (text === "") return;
+
+    totalTasks++;
+
+    let li = document.createElement("li");
+    li.textContent = text;
+
+    // complete button
+    let completeBtn = document.createElement("button");
+    completeBtn.textContent = "✔";
+
+    completeBtn.onclick = function () {
+        document.getElementById("completeList").appendChild(li);
+        completedTasks++;
+        updateProgress();
+        completeBtn.remove();
+    };
+
+    // delete button
+    let deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "X";
+
+    deleteBtn.onclick = function () {
+        li.remove();
+        totalTasks--;
+        updateProgress();
+    };
+
+    li.appendChild(completeBtn);
+    li.appendChild(deleteBtn);
+
+    document.getElementById("incompleteList").appendChild(li);
+
+    input.value = "";
+    updateProgress();
+}
+
+function updateProgress() {
+    let percent = totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
+    document.getElementById("progress").style.width = percent + "%";
+}
+
+</script>
+
+</body>
+</html>
