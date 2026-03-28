@@ -59,3 +59,18 @@ li {
 li button {
     background: red;
 }
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background: #ddd;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+#progress {
+    height: 100%;
+    width: 0%;
+    background: green;
+    border-radius: 10px;
+}
