@@ -11,6 +11,15 @@
     <h1>Task Manager</h1>
 
     <input type="text" id="taskInput" placeholder="Enter task">
+
+    <input type="date" id="dueDate">
+
+    <select id="priority">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+    </select>
+
     <button onclick="addTask()">Add</button>
 
     <h3>Progress</h3>
@@ -32,18 +41,34 @@ let completedTasks = 0;
 
 function addTask() {
     let input = document.getElementById("taskInput");
-    let text = input.value;
+    let dateInput = document.getElementById("dueDate");
+    let priorityInput = document.getElementById("priority");
 
-    if (text === "") return;
+    let text = input.value;
+    let dueDate = dateInput.value;
+    let priority = priorityInput.value;
+
+    if (text === "") {
+        alert("Enter task!");
+        return;
+    }
 
     totalTasks++;
 
     let li = document.createElement("li");
-    li.textContent = text;
 
-    // complete button
+    let span = document.createElement("span");
+    span.innerHTML = text + 
+        "<br><small>📅 " + dueDate + " | ⚡ " + priority + "</small>";
+
+    // Priority color
+    if (priority === "high") li.style.borderLeft = "5px solid red";
+    else if (priority === "medium") li.style.borderLeft = "5px solid orange";
+    else li.style.borderLeft = "5px solid green";
+
+    // Complete button
     let completeBtn = document.createElement("button");
-    completeBtn.textContent = "✔";
+    completeBtn.innerHTML = "✔️";
 
     completeBtn.onclick = function () {
         document.getElementById("completeList").appendChild(li);
@@ -52,9 +77,9 @@ function addTask() {
         completeBtn.remove();
     };
 
-    // delete button
+    // Delete button
     let deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "X";
+    deleteBtn.innerHTML = "🗑️";
 
     deleteBtn.onclick = function () {
         li.remove();
@@ -62,12 +87,15 @@ function addTask() {
         updateProgress();
     };
 
+    li.appendChild(span);
     li.appendChild(completeBtn);
     li.appendChild(deleteBtn);
 
     document.getElementById("incompleteList").appendChild(li);
 
     input.value = "";
+    dateInput.value = "";
+
     updateProgress();
 }
 
