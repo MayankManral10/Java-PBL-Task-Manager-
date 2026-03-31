@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Advanced Task Manager</title>
+    <title>Task Manager</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -20,6 +20,13 @@
     </select>
 
     <button onclick="addTask()">Add</button>
+
+    <!-- SORT DROPDOWN -->
+    <select onchange="sortTasks(this.value)">
+        <option value="">Sort By</option>
+        <option value="priority">Priority</option>
+        <option value="date">Due Date</option>
+    </select>
 
     <h3>Progress</h3>
     <div class="progress-bar">
@@ -47,18 +54,27 @@ function addTask() {
     let dueDate = dateInput.value;
     let priority = priorityInput.value;
 
-    if (text === "") {
-        alert("Enter task!");
-        return;
-    }
+    if (text === "") return;
 
     totalTasks++;
 
     let li = document.createElement("li");
 
+    // OVERDUE LOGIC
+    let today = new Date().toISOString().split("T")[0];
+    let isOverdue = dueDate && dueDate < today;
+
     let span = document.createElement("span");
-    span.innerHTML = text + 
-        "<br><small>📅 " + dueDate + " | ⚡ " + priority + "</small>";
+    span.innerHTML = text +
+        "<br><small>📅 " + dueDate +
+        " | ⚡ " + priority +
+        (isOverdue ? " | 🔴 Overdue" : "") +
+        "</small>";
+
+    // Highlight overdue
+    if (isOverdue) {
+        li.style.background = "#ffe6e6";
+    }
 
     // Priority color
     if (priority === "high") li.style.borderLeft = "5px solid red";
@@ -71,26 +87,20 @@ function addTask() {
 
     completeBtn.onclick = function () {
         document.getElementById("completeList").appendChild(li);
-
         completedTasks++;
         updateProgress();
-
         completeBtn.remove();
     };
 
-    // Delete button (FIXED BUG HERE)
+    // Delete button (FIXED)
     let deleteBtn = document.createElement("button");
     deleteBtn.innerHTML = "🗑️";
 
     deleteBtn.onclick = function () {
-
-        // If task is completed, reduce completed count
         if (li.parentElement.id === "completeList") {
             completedTasks--;
         }
-
         totalTasks--;
-
         li.remove();
         updateProgress();
     };
@@ -110,6 +120,37 @@ function addTask() {
 function updateProgress() {
     let percent = totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
     document.getElementById("progress").style.width = percent + "%";
+}
+
+// SORT FUNCTION
+function sortTasks(type) {
+
+    let list = document.getElementById("incompleteList");
+    let items = Array.from(list.children);
+
+    items.sort((a, b) => {
+
+        if (type === "priority") {
+            let p1 = a.innerText.includes("high") ? 3 :
+                     a.innerText.includes("medium") ? 2 : 1;
+
+            let p2 = b.innerText.includes("high") ? 3 :
+                     b.innerText.includes("medium") ? 2 : 1;
+
+            return p2 - p1;
+        }
+
+        if (type === "date") {
+            let d1 = a.innerText.match(/\d{4}-\d{2}-\d{2}/);
+            let d2 = b.innerText.match(/\d{4}-\d{2}-\d{2}/);
+
+            return new Date(d1) - new Date(d2);
+        }
+
+    });
+
+    list.innerHTML = "";
+    items.forEach(item => list.appendChild(item));
 }
 
 </script>
