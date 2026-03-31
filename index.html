@@ -11,7 +11,6 @@
     <h1>Task Manager</h1>
 
     <input type="text" id="taskInput" placeholder="Enter task">
-
     <input type="date" id="dueDate">
 
     <select id="priority">
@@ -72,18 +71,27 @@ function addTask() {
 
     completeBtn.onclick = function () {
         document.getElementById("completeList").appendChild(li);
+
         completedTasks++;
         updateProgress();
+
         completeBtn.remove();
     };
 
-    // Delete button
+    // Delete button (FIXED BUG HERE)
     let deleteBtn = document.createElement("button");
     deleteBtn.innerHTML = "🗑️";
 
     deleteBtn.onclick = function () {
-        li.remove();
+
+        // If task is completed, reduce completed count
+        if (li.parentElement.id === "completeList") {
+            completedTasks--;
+        }
+
         totalTasks--;
+
+        li.remove();
         updateProgress();
     };
 
