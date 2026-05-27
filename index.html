@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Task Manager</h1>
+
+    <input type="text" id="taskInput" placeholder="Enter task">
+    <input type="date" id="dueDate">
+
+    <select id="priority">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+    </select>
+
+    <button onclick="addTask()">Add</button>
+
+    <!-- SORT DROPDOWN -->
+    <select onchange="sortTasks(this.value)">
+        <option value="">Sort By</option>
+        <option value="priority">Priority</option>
+        <option value="date">Due Date</option>
+    </select>
+
+    <h3>Progress</h3>
+    <div class="progress-bar">
+        <div id="progress"></div>
+    </div>
+
+    <h3>Incomplete Tasks</h3>
+    <ul id="incompleteList"></ul>
+
+    <h3>Completed Tasks</h3>
+    <ul id="completeList"></ul>
+</div>
+
+<script>
+
+let totalTasks = 0;
+let completedTasks = 0;
+
+function addTask() {
+    let input = document.getElementById("taskInput");
+    let dateInput = document.getElementById("dueDate");
+    let priorityInput = document.getElementById("priority");
+
+    let text = input.value;
+    let dueDate = dateInput.value;
+    let priority = priorityInput.value;
+
+    if (text === "") return;
+
+    totalTasks++;
+
+    let li = document.createElement("li");
+
+    // OVERDUE LOGIC
+    let today = new Date().toISOString().split("T")[0];
+    let isOverdue = dueDate && dueDate < today;
+
+    let span = document.createElement("span");
+    span.innerHTML = text +
+        "<br><small>📅 " + dueDate +
+        " | ⚡ " + priority +
+        (isOverdue ? " | 🔴 Overdue" : "") +
+        "</small>";
+
+    // Highlight overdue
+    if (isOverdue) {
+        li.style.background = "#ffe6e6";
+    }
+
+    // Priority color
+    if (priority === "high") li.style.borderLeft = "5px solid red";
+    else if (priority === "medium") li.style.borderLeft = "5px solid orange";
+    else li.style.borderLeft = "5px solid green";
+
+    // Complete button
+    let completeBtn = document.createElement("button");
+    completeBtn.innerHTML = "✔️";
+
+    completeBtn.onclick = function () {
+        document.getElementById("completeList").appendChild(li);
+        completedTasks++;
+        updateProgress();
+        completeBtn.remove();
+    };
+
+    // Delete button (FIXED)
+    let deleteBtn = document.createElement("button");
+    deleteBtn.innerHTML = "🗑️";
+
+    deleteBtn.onclick = function () {
+        if (li.parentElement.id === "completeList") {
+            completedTasks--;
+        }
+        totalTasks--;
+        li.remove();
+        updateProgress();
+    };
+
+    li.appendChild(span);
+    li.appendChild(completeBtn);
+    li.appendChild(deleteBtn);
+
+    document.getElementById("incompleteList").appendChild(li);
+
+    input.value = "";
+    dateInput.value = "";
+
+    updateProgress();
+}
+
+function updateProgress() {
+    let percent = totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
+    document.getElementById("progress").style.width = percent + "%";
+}
+
+// SORT FUNCTION
+function sortTasks(type) {
+
+    let list = document.getElementById("incompleteList");
+    let items = Array.from(list.children);
+
+    items.sort((a, b) => {
+
+        if (type === "priority") {
+            let p1 = a.innerText.includes("high") ? 3 :
+                     a.innerText.includes("medium") ? 2 : 1;
+
+            let p2 = b.innerText.includes("high") ? 3 :
+                     b.innerText.includes("medium") ? 2 : 1;
+
+            return p2 - p1;
+        }
+
+        if (type === "date") {
+            let d1 = a.innerText.match(/\d{4}-\d{2}-\d{2}/);
+            let d2 = b.innerText.match(/\d{4}-\d{2}-\d{2}/);
+
+            return new Date(d1) - new Date(d2);
+        }
+
+    });
+
+    list.innerHTML = "";
+    items.forEach(item => list.appendChild(item));
+}
+
+</script>
+
+</body>
+</html>
