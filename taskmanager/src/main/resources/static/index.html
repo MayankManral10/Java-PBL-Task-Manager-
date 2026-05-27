@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Task Manager</h1>
+
+    <input type="number" id="id" placeholder="Task ID">
+
+    <input type="text" id="title" placeholder="Enter task">
+
+    <input type="date" id="date">
+
+    <select id="priority">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+    </select>
+
+    <button onclick="addTask()">Add</button>
+
+    <h3>Tasks</h3>
+      
+    <h3>Progress</h3>
+
+<div class="progress-bar">
+    <div id="progress"></div>
+</div>
+
+    <div id="taskList"></div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
